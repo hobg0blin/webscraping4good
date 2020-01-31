@@ -10,15 +10,8 @@ Simply put, it’s gathering and extracting data from a website or websites. If 
 
 Generally, however, what people mean when they talk about web scraping is the automation of this process. Rather than manually searching flickr for pictures of trees and downloading them one by one, automated web scraping allows us to download every picture of a tree on flickr in a short amount of time by executing simple scripts or using software.
 
-## What do people use it for?
-
 ## What tools can we use to scrape data?
 
-### Basic
-
-[wget] :
-
-### High-Level
 
 There are a whole lot of them, and you can also write your own! We’re going to focus primarily on scraping with Python, so here are a few of the most popular scraping tools.
 
@@ -51,7 +44,7 @@ A spider, also often called a web crawler, is a bot that automatically browses w
 
 ### Back to making the spider
 
-In your text editor of choice, open `text_spider.py`. We’ll start by telling it what website to visit: in this case, we’ll be using [books.toscrape.com](books.toscrape.com), a prebuilt website intended for people to test their scrapers on.
+In your text editor of choice, open `text_spider.py`. We’ll start by telling it what website to visit: in this case, we’ll be using [books.toscrape.com](http://books.toscrape.com), a prebuilt website intended for people to test their scrapers on.
 
 First, in the `text_spider.py` file, enter:
 
@@ -77,12 +70,12 @@ Now, below `name=”text”`, enter:
       #at each url, run the ‘parse’ function
       yield scrapy.Request(url=url, callback=self.parse)
 
-    def parse(self, response):
-      #set a filename to write the response to
-      filename = ‘books.html’
-      with open(filename, ‘wb’) as f:
-        f.write(response.body)
-      self.log(‘Saved file %s’ % filename)
+  def parse(self, response):
+    #set a filename to write the response to
+    filename = ‘books.html’
+    with open(filename, ‘wb’) as f:
+      f.write(response.body)
+    self.log(‘Saved file %s’ % filename)
 ```
 
 We now have the simplest possible spider, so let’s run it!
@@ -153,7 +146,7 @@ But what if we want to download the book covers for our fancy new GAN, or for ou
 
 First of all, if you don’t already have it, you’ll need to install Pillow: `pip install Pillow`
 
-To get images, we’ll need to add a line to our settings file that tells Scrapy where to download images to. If you’re downloading hundreds or thousands of images, you may want to write them to some form of cloud storage - more information on that [here](https://docs.scrapy.org/en/latest/topics/media-pipeline.html).
+To get images, we’ll need to add a line to our settings file that tells Scrapy that we want to actually download files. If you’re downloading hundreds or thousands of images, you may want to write them to some form of cloud storage - more information on that [here](https://docs.scrapy.org/en/latest/topics/media-pipeline.html).
 
 Open the `settings.py` file, uncomment lines 67 through 69, and change it to the following:
 
@@ -209,5 +202,7 @@ Once it finishes downloading, we should be able to enter the `images/full` folde
 
 
 ## More useful stuff
+
+[A bunch of links I’ve collected](https://www.are.na/brent-bailey/web-scraping-4-social-good): This is a general storage place for scraping-related content that I put together - covers both the broader environment around web scraping and more specific tools and tutorials.
 
 [Using Scrapy with XPath](https://docs.scrapy.org/en/latest/topics/selectors.html#topics-selectors) : XPath is a more powerful way of scraping pages by searching for content that’s not just CSS.
