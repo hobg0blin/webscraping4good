@@ -13,8 +13,13 @@ class TextSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
+        # go to the 'book' <article> container
+        for book in response.css('article.product_pod'):
+            # get the title from the nested <a> link object inside the <h3> object
+            yield {
+                'title': book.css('h3 a::text').get()
+            }
         # set a filename to write the response to
-        filename = 'books.html'
-        with open(filename, "wb") as f:
-            f.write(response.body)
-        self.log('Saved file % s' % filename)
+        # filename = 'books.html'
+        # with open(filename, "wb") as f:
+        # self.log('Saved file % s' % filename)
