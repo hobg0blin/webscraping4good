@@ -111,51 +111,9 @@ is represented in the page’s HTML by an `<article>` object like this:
 
 ![An HTML <article> object containing a number of HTML objects](img/article_html.png)
 
-#### A quick aside: #### If you want to be an *elite hacker*, Scrapy has a command line tool for exploring html, [Scrapy shell](https://docs.scrapy.org/en/latest/topics/shell.html#topics-shell). We don’t have time to cover it here, but it’s a useful tool if you’re more comfortable in the terminal.
+#### A quick aside: #### If you want to be an *elite hacker*, scrapy has a command line tool for exploring html, [Scrapy shell](https://docs.scrapy.org/en/latest/topics/shell.html#topics-shell). We don’t have time to cover it here, but it’s a useful tool if you’re more comfortable in the terminal.
 
-In this example, if we dig into the HTML further, we’ll find that the book title is contained inside the `<h3>` object:
-
-![An <h3> object containing a link titled “Tipping the Velvet”](img/book_title.png)
-
-So, if we want to get the title of every book on the page, we need to tell Scrapy to go get it from inside that `<h3>`.
-
-Let’s go back to `text_scraper.py`
-
-For now, we can remove the old code under our `parse` function, and instead tell Scrapy to extract data from the page’s HTML:
-
-```
-
-def parse(self, response):
-      #as we can see in the page’s HTML, each book is contained in an <article> with the class ‘product_pod’, so we’ll tell Scrapy to start there
-
-      for book in response.css(‘article.product_pod’):
-        yield {
-          ‘title’: book.css(‘h3.text::text’).get()
-        }
-
-```
-
-If we run our scraper again, we should see it output some book titles:
-
-![A command line printout of a bunch of book titles](img/scrapy_title_print.png)
-
-Now we’re getting somewhere! But if we want to actually store this data, we’ll need to tell Scrapy to keep it. This is super simple for basic JSON objects:
-
-run `scrapy crawl text -o titles.json`
-
-And it should write a JSON file to your folder containing all the objects. JSON not useful for your project? [Scrapy’s feed exports](https://docs.scrapy.org/en/latest/topics/feed-exports.html#topics-feed-exports) include CSV and XML as well.
-
-### Do It Yourself
-
-Now try getting the price or star rating from the <article> object.
-
-### Downloading images
-
-
-
-
-
-
+In this example, if we dig into the HTML further, we’ll find
 
 
 
