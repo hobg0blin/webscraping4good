@@ -111,7 +111,7 @@ is represented in the page’s HTML by an `<article>` object like this:
 
 ![An HTML <article> object containing a number of HTML objects](img/article_html.png)
 
-#### A quick aside: #### If you want to be an *elite hacker*, Scrapy has a command line tool for exploring html, [Scrapy shell](https://docs.scrapy.org/en/latest/topics/shell.html#topics-shell). We don’t have time to cover it here, but it’s a useful tool if you’re more comfortable in the terminal.
+#### A quick aside: If you want to be an *elite hacker*, Scrapy has a command line tool for exploring html, [Scrapy shell](https://docs.scrapy.org/en/latest/topics/shell.html#topics-shell). We don’t have time to cover it here, but it’s a useful tool if you’re more comfortable in the terminal.
 
 In this example, if we dig into the HTML further, we’ll find that the book title is contained inside the `<h3>` object:
 
@@ -139,27 +139,69 @@ If we run our scraper again, we should see it output some book titles:
 
 ![A command line printout of a bunch of book titles](img/scrapy_title_print.png)
 
-Now we’re getting somewhere! But if we want to actually store this data, we’ll need to tell Scrapy to keep it. This is super simple for basic JSON objects:
-
-run `scrapy crawl text -o titles.json`
-
-And it should write a JSON file to your folder containing all the objects. JSON not useful for your project? [Scrapy’s feed exports](https://docs.scrapy.org/en/latest/topics/feed-exports.html#topics-feed-exports) include CSV and XML as well.
+Now we’re getting somewhere! But if we want to actually store this data, we’ll need to tell Scrapy to keep it. This is super simple for basic JSON objects, just run:
+`scrapy crawl text -o titles.json`
+and it should write a JSON file to your folder containing all the objects. JSON not useful for your project? [Scrapy’s feed exports](https://docs.scrapy.org/en/latest/topics/feed-exports.html#topics-feed-exports) include CSV and XML as well.
 
 ### Do It Yourself
 
-Now try getting the price or star rating from the <article> object.
+Now try getting the price or star rating from the `<article>` object and writing it to a JSON file.
 
-### Downloading images
+### Downloading Images
+
+But what if we want to download the book covers for our fancy new GAN, or for our Instagram that for some reason posts just pictures of book covers?
+
+First of all, if you don’t already have it, you’ll need to install Pillow: `pip install Pillow`
+
+To get images, we’ll need to add a line to our settings file that tells Scrapy where to download images to. If you’re downloading hundreds or thousands of images, you may want to write them to some form of cloud storage - more information on that [here](https://docs.scrapy.org/en/latest/topics/media-pipeline.html).
+
+Open the `settings.py` file, uncomment lines 67 through 69, and change it to the following:
+
+```
+# Configure item pipelines
+# See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
+ITEM_PIPELINES = {
+    'scrapy.pipelines.images.ImagesPipeline': 1,
+}
 
 
+```
 
+Now, at the bottom of the settings file, add a line with a filepath to where you want to store the images - we’ll just use a folder named `images`:
+```
+#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+IMAGES_STORE=  ‘./images/’
+```
 
+Now let’s go to the `spiders` folder and create a new file called `image_spider.py`. Open the file and copy in this basic code:
 
+```
+import scrapy
 
+class ImageSpider(scrapy.Spider):
+  name=”image”
 
+  # this is a simpler way of using Scrapy’s default settings for crawling URLs - we don’t have to use the start_requests function unless we want to use custom code.
+  start_urls = [‘https://books.toscrape.com’]
 
+  def parse(self, response):
+    # set an empty ‘dict’ to contain our images
+    books = dict()
+    #create an array of image URLs to get from the HTML
+    image_urls = []
 
+    for book in response.css(‘article.product_pod’):
+      #get the absolute link to the image by joining it to the URL of the website
+          image_urls.append(response.urljoin(book.css('div.image_container a img.thumbnail::attr(src)').get()))
+      #add these URLs to our books object
+        books['image_urls'] = image_urls
+      # tell Scrapy to download the images to the folder we designated in settings
+        yield books
+```
 
+Now, if we run our image scraper: `scrapy crawl images`
+
+Once it finishes downloading, we should be able to enter the `images/full` folder and see all the images we downloaded!
 
 
 
