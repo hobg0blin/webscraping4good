@@ -34,16 +34,16 @@ Good for crawling websites - visiting multiple pages in a single session. Extrem
 If you haven’t already, let’s install Scrapy. You can do this easily in the terminal with ```pip install scrapy```.
 
 Once scrapy is installed, we can create an empty project folder for our scraper:
-``` scrapy startproject babys-first-scraper```
+``` scrapy startproject babys_first_scraper```
 
-This will create a folder called “babys-first-scraper”. if you enter the folder, it should contain a structure like this:
+This will create a folder called “babys_first_scraper”. if you enter the folder, it should contain a structure like this:
 ![the standard scrapy directory structure](img/file_structure.png)
 
 Now let’s start actually writing our scraper!
 
-Go to the `spiders` directory within the `babys-first-scraper` folder:
+Go to the `spiders` directory within the `babys_first_scraper` folder:
 
-```cd babys-first-scraper/spiders``` and create a spider file: ```touch text-spider.py```.
+```cd babys_first_scraper/spiders``` and create a spider file: ```touch text_spider.py```.
 
 ### Wait, what’s a spider?
 
@@ -51,9 +51,9 @@ A spider, also often called a web crawler, is a bot that automatically browses w
 
 ### Back to making the spider
 
-In your text editor of choice, open `text-spider.py`. We’ll start by telling it what website to visit: in this case, we’ll be using [books.toscrape.com](books.toscrape.com), a prebuilt website intended for people to test their scrapers on.
+In your text editor of choice, open `text_spider.py`. We’ll start by telling it what website to visit: in this case, we’ll be using [books.toscrape.com](books.toscrape.com), a prebuilt website intended for people to test their scrapers on.
 
-First, in the `text-spider.py` file, enter:
+First, in the `text_spider.py` file, enter:
 
 ```
 import scrapy
@@ -68,6 +68,7 @@ Now, below `name=”text”`, enter:
 
 ```
   def start_requests(self):
+
     #tell it which website(s) to visit
     urls=[
       ‘http://books.toscrape.com’]
@@ -75,6 +76,7 @@ Now, below `name=”text”`, enter:
     for url in urls:
       #at each url, run the ‘parse’ function
       yield scrapy.Request(url=url, callback=self.parse)
+
     def parse(self, response):
       #set a filename to write the response to
       filename = ‘books.html’
@@ -83,6 +85,46 @@ Now, below `name=”text”`, enter:
       self.log(‘Saved file %s’ % filename)
 ```
 
-We now have the simples possible spider, so let’s run it!
+We now have the simplest possible spider, so let’s run it!
+
+Go to the root folder in the terminal and run
+
+`scrapy crawl text`
+
+If everything in your script is correct, you should see something like this:
+
+![A bunch of Scrapy terminal printouts from the run process](img/successful_scrape.png)
+
+And when your script is finished running, there should now be a `books.html` file in your root folder.
+
+If you open this in the browser, you’ll see a bunch of unstyled HTML. Not super useful - we could just have used  `wget` for that.
+
+So let’s start taking advantage of the power of Scrapy in earnest!
+
+### Parsing HTML
+
+Where Scrapy really starts to become useful is when we start to parse the raw HTML of the pages Scrapy visits. On books.toscrape.com, for example, each book item we see:
+
+![Three books with images, titles, ratings, and price displayed on a mock bookshop website](img/books.png)
+
+is represented in the page’s HTML by an `<article>` object like this:
+
+![An HTML <article> object containing a number of HTML objects](img/article_html.png)
+
+#### A quick aside
+If you want to be an *elite hacker*, scrapy has a command line tool for exploring html, [Scrapy shell](https://docs.scrapy.org/en/latest/topics/shell.html#topics-shell). We don’t have time to cover it here, but it’s a useful tool if you’re more comfortable in the terminal.
+
+In this example, if we dig into the HTML further, we’ll find
 
 
+
+
+
+
+
+
+
+
+## More useful stuff
+
+[Using Scrapy with XPath](https://docs.scrapy.org/en/latest/topics/selectors.html#topics-selectors) : XPath is a more powerful way of scraping pages by searching for content that’s not just CSS.
